@@ -4,8 +4,9 @@ using UnityEngine;
 using UnityEngine.UI;
 public class GmaeManager : MonoBehaviour
 {
+    public PlayerManager scrip_PlayerManager;
     public AudioSource BackgroundSound;
-    bool bGameStart = false;
+    public bool bGameStart = false;
 
     //게임 메인화면
     public GameObject mainViewTexts;
@@ -15,9 +16,12 @@ public class GmaeManager : MonoBehaviour
     public AudioSource test;
 
     //게임 플레이
+    public CreateMonsterManager script_CreateMonsterManager;
     public ScoreSystem script_ScoreSystem;
     public PlayerHeartManager script_PlayerHeartManager;
     public GameObject gameOver_Texts;
+    public bool bGameOver = false;
+
     private void Awake()
     {
         script_PlayerHeartManager = GetComponent<PlayerHeartManager>();
@@ -27,23 +31,46 @@ public class GmaeManager : MonoBehaviour
     void Update()
     {
 
-        if (Input.GetKeyDown(KeyCode.Q))
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            bGameStart = false;
+        }
+        else if (Input.anyKeyDown && !(Input.GetMouseButton(0) || Input.GetMouseButton(1)))
         {
             if (!bGameStart)
             {
                 test.time = 0.1f;
                 test.Play();
+
+                bGameStart = true;
             }
-            bGameStart = !bGameStart;
         }
-        
+
+        scrip_PlayerManager.bGameStart = bGameStart;
+        gameOver_Texts.SetActive(scrip_PlayerManager.bGameEnd);
         if (bGameStart)
         {
-            script_PlayerHeartManager.SetActive(true);
-            mainViewTexts.SetActive(false);
+            if (scrip_PlayerManager.bGameEnd)
+            {
+                bGameOver = true;
+                script_CreateMonsterManager.bGameStart = false;
+                script_PlayerHeartManager.SetActive(false);
+            }
+            else
+            {
+                if(bGameOver)
+                    script_ScoreSystem.currentScore = 0;
+
+                bGameOver = false;
+                script_CreateMonsterManager.bGameStart = true;
+                script_PlayerHeartManager.SetActive(true);
+                mainViewTexts.SetActive(false);
+            }
         }
         else
         {
+            bGameOver = true;
+            script_CreateMonsterManager.bGameStart = false;
             script_PlayerHeartManager.SetActive(false);
             script_ScoreSystem.currentScore = 0;
             mainViewTexts.SetActive(true);

@@ -5,13 +5,12 @@ using UnityEngine;
 public class PlayerHeartManager : MonoBehaviour
 {
     public Transform heartImage;
-    
+    public PlayerManager script_PlayerManager;
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.W))
-        {
-            heartImage.GetChild(2).gameObject.SetActive(false);
-        }
+        if(script_PlayerManager.heart< heartImage.childCount)
+            heartImage.GetChild(script_PlayerManager.heart).gameObject.SetActive(false);
+
     }
     public void SetActive(bool set)
     {
